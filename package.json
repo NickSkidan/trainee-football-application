@@ -1,0 +1,20 @@
+{
+  "name": "trainee-football-application",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickSkidan/trainee-football-application.git"
+  },
+  "author": "Nick Skidan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NickSkidan/trainee-football-application/issues"
+  },
+  "homepage": "https://github.com/NickSkidan/trainee-football-application#readme"
+}

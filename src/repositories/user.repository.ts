@@ -13,7 +13,7 @@ export const getUsers = async (): Promise<Array<User>> => {
     const userRepository = getConnection().getRepository(User);
     const users = await userRepository
       .createQueryBuilder('user')
-      .select(['user.id', 'user.username', 'user.email'])
+      .select(['user.username', 'user.email'])
       .getMany();
   
     return users;

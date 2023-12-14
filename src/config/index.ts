@@ -1,5 +1,6 @@
 export default {
     port: process.env.PORT,
+    sessionSecret: process.env.SESSION_SECRET || 'default-secret',
 
     postgres: {
       port: process.env.POSTGRES_CONTAINER_PORT || "5432",

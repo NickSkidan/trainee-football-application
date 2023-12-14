@@ -1,4 +1,4 @@
-import config from './index'
+import config from '.'
 export =  {
   host: config.postgres.host,
   type: 'postgres',

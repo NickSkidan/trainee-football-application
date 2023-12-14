@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: trainee-football-app
     env_file: .env
-    working_dir: /src
+    working_dir: /app
     ports:
       - "3000:3000"
     environment:

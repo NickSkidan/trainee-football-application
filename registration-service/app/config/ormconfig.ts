@@ -1,4 +1,5 @@
 import config from '.'
+
 export =  {
   host: config.postgres.host,
   type: 'postgres',
@@ -7,13 +8,13 @@ export =  {
   password: config.postgres.password,
   database: config.postgres.database,
   entities: [
-    'src/entities/*.entity.ts',
+    'app/entities/*.entity.ts',
   ],
   migrations: [
-    'src/migrations/*.ts',
+    'app/migrations/*.ts',
   ],
   cli: {
-    migrationsDir: 'src/migrations',
+    migrationsDir: 'app/migrations',
   },
   synchronize: false,
 };

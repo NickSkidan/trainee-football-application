@@ -1,35 +1,23 @@
-version: '3.8'
-
+version: "3.9"
 services:
-  registration-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: registration-service
-    env_file: .env
-    working_dir: /app
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: $DATABASE_URL
-      NODE_ENV: $NODE_ENV
-      POSTGRES_PORT: $POSTGRES_PORT
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_HOST: $POSTGRES_HOST
-      POSTGRES_DB: $POSTGRES_DB
-    depends_on:
-      - postgres
-
   postgres:
     image: postgres:latest
     restart: always
-    env_file: .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_DB: $POSTGRES_DB
-    volumes:
-      - ./migrations/init.sql:/docker-entrypoint-initdb.d/dbinit.sql
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=football
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "5432:5432"
+    volumes:
+      - football_db:/var/lib/postgresql/data
+    networks:
+      - football_network
+
+volumes:
+  football_db:
+    driver: local
+
+networks:
+  football_network:
+    driver: bridge

@@ -1,4 +1,13 @@
-# trainee-football-application
+## Local Usage
+1. Create .env file, fullfill it with a values from .env.example
+2. Run the command
 
-Create .env file and fill it with values from .env.example, then execute command:
-docker-compose up --build
+```
+$ npm run dev
+```
+
+### Deployment
+
+```
+$ npm run deploy
+```

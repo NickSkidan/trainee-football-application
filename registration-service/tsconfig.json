@@ -1,29 +1,22 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
     "allowSyntheticDefaultImports": true,
-    "target": "es6",                         
-    "module": "commonjs",                    
-    "strict": true,                          
-    "esModuleInterop": true,
-    "skipLibCheck": true,                 
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
+    "target": "es6",
+    "resolveJsonModule": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist",
     "baseUrl": ".",
-    "forceConsistentCasingInFileNames": true, 
-    "strictPropertyInitialization": false,
-    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]
-    }
+    "experimentalDecorators": true,
+    "outDir": "./dist",
+    "rootDir": "./app",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
   },
-  "include": ["app/**/*"],
+  "include": ["app/**/*", "*.ts"],
   "exclude": ["node_modules"]
 }

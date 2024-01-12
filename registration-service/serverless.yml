@@ -1,0 +1,173 @@
+org: mykolaskydan
+app: trainee-football-app
+service: registration-service
+frameworkVersion: "3"
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  versionFunctions: false
+  stage: "dev"
+  region: us-west-2
+  httpApi:
+    cors: true
+  environment:
+    SNS_TOPIC: { Ref: TransferTopic }
+    DB_SECRET_NAME: ${env:DB_SECRET_NAME}
+    AWS_REGION: ${env:AWS_REGION}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+      Resource: arn:aws:s3:::trainee-football-app-${self:provider.stage}/*
+    - Effect: Allow
+      Action:
+        - "sns:Publish"
+      Resource:
+        - !Ref TransferTopic
+    - Effect: Allow
+      Action:
+        - "secretsmanager:GetSecretValue"
+      Resource: "*"
+
+custom:
+  stage: "dev"
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 4002
+
+functions:
+  registration:
+    handler: app/handler.Registration
+    events:
+      - httpApi:
+          path: /register
+          method: post
+  login:
+    handler: app/handler.Login
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  verify:
+    handler: app/handler.Verify
+    events:
+      - httpApi:
+          path: /verify
+          method: post
+      - httpApi:
+          path: /verify
+          method: get
+  profile:
+    handler: app/handler.Profile
+    events:
+      - httpApi:
+          path: /profile
+          method: get
+      - httpApi:
+          path: /profile
+          method: put
+      - httpApi:
+          path: /profile
+          method: post
+  createPlayer:
+    handler: app/handler.CreatePlayer
+    events:
+      - httpApi:
+          path: /player
+          method: post
+  getAllPlayers:
+    handler: app/handler.GetAllPlayers
+    events:
+      - httpApi:
+          path: /players
+          method: get
+  playerProfile:
+    handler: app/handler.PlayerProfile
+    events:
+      - httpApi:
+          path: /players/{id}
+          method: get
+      - httpApi:
+          path: /players/{id}
+          method: put
+      - httpApi:
+          path: /players/{id}
+          method: delete
+  createTeam:
+    handler: app/handler.CreateTeam
+    events:
+      - httpApi:
+          path: /team
+          method: post
+  getAllTeams:
+    handler: app/handler.GetAllTeams
+    events:
+      - httpApi:
+          path: /teams
+          method: get
+  teamProfile:
+    handler: app/handler.TeamProfile
+    events:
+      - httpApi:
+          path: /teams/{id}
+          method: get
+      - httpApi:
+          path: /teams/{id}
+          method: put
+      - httpApi:
+          path: /teams/{id}
+          method: delete
+  imageUploader:
+    handler: app/handler.ImageUploader
+    events:
+      - httpApi:
+          path: /upload
+          method: post
+    environment:
+      BUCKET_NAME: trainee-football-app-${self:provider.stage}
+  joinTeam:
+    handler: app/handler.JoinTeam
+    timeout: 20
+    events:
+      - httpApi:
+          path: /join-team/{teamId}
+          method: post
+  addPlayer:
+    handler: app/handler.AddPlayer
+    timeout: 20
+    events:
+      - httpApi:
+          path: /add-player/{playerId}
+          method: post
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
+
+# package:
+  # individually: true
+
+resources:
+  Resources:
+    BucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: trainee-football-app-${self:provider.stage}
+    TransferTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "transfer sns topic description"
+        TopicName: TransferTopic
+
+  # output for later usages
+  Outputs:
+    TransferTopicInfo:
+      Description: transfer-topic
+      Value: !Ref TransferTopic
+      Export:
+        Name: transfer-topic

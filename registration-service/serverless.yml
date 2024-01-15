@@ -17,6 +17,7 @@ provider:
     SNS_TOPIC: { Ref: TransferTopic }
     DB_SECRET_NAME: ${env:DB_SECRET_NAME}
     AWS_REGION: ${env:AWS_REGION}
+    SMTP_SECRET_NAME: ${env:SMTP_SECRET_NAME}
   iamRoleStatements:
     - Effect: Allow
       Action:

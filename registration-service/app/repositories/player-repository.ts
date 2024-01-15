@@ -30,11 +30,11 @@ export class PlayerRepository extends DBOperation {
 
     if (limit) {
       queryString =
-        "SELECT name, age, position, player_photo_url, price FROM players OFFSET $1 LIMIT $2";
+        "SELECT id, name, age, position, player_photo_url, price, team_id FROM players OFFSET $1 LIMIT $2";
       values = [offset, limit];
     } else {
       queryString =
-        "SELECT name, age, position, player_photo_url, price FROM players OFFSET $1";
+        "SELECT id, name, age, position, player_photo_url, price, team_id FROM players OFFSET $1";
       values = [offset];
     }
 
@@ -45,7 +45,7 @@ export class PlayerRepository extends DBOperation {
 
   async getPlayerById(id: string) {
     const queryString =
-      "SELECT name, age, position, player_photo_url, price FROM players WHERE id=$1";
+      "SELECT id, name, age, position, player_photo_url, price, team_id FROM players WHERE id=$1";
     const values = [id];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount) {
@@ -88,7 +88,7 @@ export class PlayerRepository extends DBOperation {
 
   async getPlayerByUserId(userId: string) {
     const queryString =
-      "SELECT name, age, position, player_photo_url, price, team_id FROM players WHERE user_id=$1";
+      "SELECT id, name, age, position, player_photo_url, price, team_id FROM players WHERE user_id=$1";
     const values = [userId];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount) {

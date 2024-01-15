@@ -182,14 +182,6 @@ export class TeamService {
         return ErrorResponse(404, "team id is null");
       }
 
-      const updatedPlayer = await this._playerRepository.updatePlayerTeamId(
-        playerId,
-        teamData.id
-      );
-      if (!updatedPlayer) {
-        return ErrorResponse(404, "error during updating player team id");
-      }
-
       if (
         !teamData.budget ||
         !playerData.price ||
@@ -201,6 +193,19 @@ export class TeamService {
         );
       }
 
+      const updatedPlayer = await this._playerRepository.updatePlayerTeamId(
+        playerId,
+        teamData.id
+      );
+      const budget = teamData.budget - playerData.price;
+      const updatedTeam = await this._teamRepository.updateTeamBudget(
+        teamData.id,
+        budget
+      );
+      if (!updatedPlayer || !updatedTeam) {
+        return ErrorResponse(404, "error during updating entities");
+      }
+
       const message = {
         userId: payload.id,
         playerId: playerId,
@@ -209,13 +214,14 @@ export class TeamService {
         playerPrice: playerData.price,
       };
 
+      console.log("Message:", JSON.stringify(message));
       const input = {
         Message: JSON.stringify(message),
         TopicArn: process.env.SNS_TOPIC,
         MessageAttributes: {
           actionType: {
             DataType: "String",
-            StringValue: "place_transfer",
+            StringValue: "processTransfer",
           },
         },
       };

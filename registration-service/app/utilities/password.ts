@@ -1,5 +1,5 @@
 import { UserModel } from "../models/user-model";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 
 const APP_SECRET = "our_app_secret";

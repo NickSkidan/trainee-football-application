@@ -31,11 +31,11 @@ export class TeamRepository extends DBOperation {
 
     if (limit) {
       queryString =
-        "SELECT name, formation, team_logo_url, budget FROM teams OFFSET $1 LIMIT $2";
+        "SELECT id, name, formation, team_logo_url, budget FROM teams OFFSET $1 LIMIT $2";
       values = [offset, limit];
     } else {
       queryString =
-        "SELECT name, formation, team_logo_url, budget FROM teams OFFSET $1";
+        "SELECT id, name, formation, team_logo_url, budget FROM teams OFFSET $1";
       values = [offset];
     }
 
@@ -46,7 +46,7 @@ export class TeamRepository extends DBOperation {
 
   async getTeamById(id: string) {
     const queryString =
-      "SELECT name, formation, team_logo_url, budget FROM teams WHERE id=$1";
+      "SELECT id, name, formation, team_logo_url, budget FROM teams WHERE id=$1";
     const values = [id];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount) {
@@ -89,9 +89,25 @@ export class TeamRepository extends DBOperation {
 
   async getTeamByUserId(userId: string) {
     const queryString =
-      "SELECT name, formation, team_logo_url, budget FROM teams WHERE user_id=$1";
+      "SELECT id, name, formation, team_logo_url, budget FROM teams WHERE user_id=$1";
     const values = [userId];
     const result = await this.executeQuery(queryString, values);
+    if (result.rowCount) {
+      if (result.rowCount > 0) {
+        return result.rows[0] as TeamModel;
+      }
+    }
+
+    return null;
+  }
+
+  async updateTeamBudget(id: string, budget: number): Promise<TeamModel | null> {
+    const queryString =
+      "UPDATE teams SET budget=$1 WHERE id=$2 RETURNING *";
+    const values = [budget, id];
+
+    const result = await this.executeQuery(queryString, values);
+
     if (result.rowCount) {
       if (result.rowCount > 0) {
         return result.rows[0] as TeamModel;

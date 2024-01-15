@@ -1,15 +1,11 @@
 import * as cdk from "aws-cdk-lib";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
-import {
-  NodejsFunction,
-  NodejsFunctionProps,
-} from "aws-cdk-lib/aws-lambda-nodejs";
 import { Topic, SubscriptionFilter } from "aws-cdk-lib/aws-sns";
 import { SqsSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
-import { join } from "path";
+import { ApiGatewayStack } from "./api-gateway-stack";
+import { ServiceStack } from "./service-stack";
 
 export class TransferServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -36,24 +32,17 @@ export class TransferServiceStack extends cdk.Stack {
       })
     );
 
-    // handler
-    const nodeJsFunctionProps: NodejsFunctionProps = {
-      bundling: {
-        externalModules: ["aws-sdk"],
-      },
-      runtime: Runtime.NODEJS_18_X,
-      timeout: cdk.Duration.seconds(10),
-    };
-
-    const createTransferHandler = new NodejsFunction(
+    const { createTransfer, getTransfer, getTransfers } = new ServiceStack(
       this,
-      "create-transfer-handler",
-      {
-        entry: join(__dirname, "/../src/transfer/create.ts"),
-        ...nodeJsFunctionProps,
-      }
+      "transfer-service",
+      {}
     );
+    createTransfer.addEventSource(new SqsEventSource(transferQueue));
 
-    createTransferHandler.addEventSource(new SqsEventSource(transferQueue));
+    new ApiGatewayStack(this, "transfer-api-gateway", {
+      createTransfer,
+      getTransfer,
+      getTransfers,
+    });
   }
 }

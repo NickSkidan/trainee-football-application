@@ -6,18 +6,18 @@ services:
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=football
+      - POSTGRES_DB=trainee-football-app-db
     ports:
       - "5432:5432"
     volumes:
-      - football_db:/var/lib/postgresql/data
+      - trainee_football_app_db:/var/lib/postgresql/data
     networks:
-      - football_network
+      - trainee_football_app_network
 
 volumes:
-  football_db:
+  trainee_football_app_db:
     driver: local
 
 networks:
-  football_network:
+  trainee_football_app_network:
     driver: bridge

@@ -27,7 +27,7 @@ export class UserRepository extends DBOperation {
 
   async getUserByEmail(email: string) {
     const queryString =
-      "SELECT id, email, verification_code, expiry FROM users WHERE email=$1";
+      "SELECT id, email, password, verification_code, expiry FROM users WHERE email=$1";
     const values = [email];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount) {
@@ -40,7 +40,7 @@ export class UserRepository extends DBOperation {
 
   async getUserByPhone(phone: string) {
     const queryString =
-      "SELECT id, email, phone, verification_code, expiry FROM users WHERE phone=$1";
+      "SELECT id, email, password, phone, verification_code, expiry FROM users WHERE phone=$1";
     const values = [phone];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount) {

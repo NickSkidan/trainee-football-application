@@ -39,11 +39,15 @@ export class UserService {
       if (error) {
         return ErrorResponse(404, error);
       }
-      const existingUserByEmail = await this.repository.getUserByEmail(input.email);
+      const existingUserByEmail = await this.repository.getUserByEmail(
+        input.email
+      );
       if (existingUserByEmail) {
         throw new Error("user with such email already exists");
       }
-      const existingUserByPhone = await this.repository.getUserByPhone(input.phone);
+      const existingUserByPhone = await this.repository.getUserByPhone(
+        input.phone
+      );
       if (existingUserByPhone) {
         throw new Error("user with such phone already exists");
       }

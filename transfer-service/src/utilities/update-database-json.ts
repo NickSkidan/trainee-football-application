@@ -1,14 +1,12 @@
 import {
-  SecretsManagerClient,
   GetSecretValueCommand,
+  SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-dotenv.config();
+import path = require("path");
+import fs = require("fs");
 
 const getDatabaseCredentials = async () => {
-  const secretName = process.env.DB_SECRET_NAME;
+  const secretName = "trainee/football/app/transfer/db/secret";
 
   const client = new SecretsManagerClient();
 

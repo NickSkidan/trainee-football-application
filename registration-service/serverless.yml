@@ -16,7 +16,6 @@ provider:
   environment:
     SNS_TOPIC: { Ref: TransferTopic }
     DB_SECRET_NAME: ${env:DB_SECRET_NAME}
-    AWS_REGION: ${env:AWS_REGION}
     SMTP_SECRET_NAME: ${env:SMTP_SECRET_NAME}
   iamRoleStatements:
     - Effect: Allow
@@ -43,18 +42,21 @@ custom:
 functions:
   registration:
     handler: app/handler.Registration
+    timeout: 20
     events:
       - httpApi:
           path: /register
           method: post
   login:
     handler: app/handler.Login
+    timeout: 20
     events:
       - httpApi:
           path: /login
           method: post
   verify:
     handler: app/handler.Verify
+    timeout: 20
     events:
       - httpApi:
           path: /verify
@@ -64,6 +66,7 @@ functions:
           method: get
   profile:
     handler: app/handler.Profile
+    timeout: 20
     events:
       - httpApi:
           path: /profile
@@ -76,18 +79,21 @@ functions:
           method: post
   createPlayer:
     handler: app/handler.CreatePlayer
+    timeout: 20
     events:
       - httpApi:
           path: /player
           method: post
   getAllPlayers:
     handler: app/handler.GetAllPlayers
+    timeout: 20
     events:
       - httpApi:
           path: /players
           method: get
   playerProfile:
     handler: app/handler.PlayerProfile
+    timeout: 20
     events:
       - httpApi:
           path: /players/{id}
@@ -100,18 +106,21 @@ functions:
           method: delete
   createTeam:
     handler: app/handler.CreateTeam
+    timeout: 20
     events:
       - httpApi:
           path: /team
           method: post
   getAllTeams:
     handler: app/handler.GetAllTeams
+    timeout: 20
     events:
       - httpApi:
           path: /teams
           method: get
   teamProfile:
     handler: app/handler.TeamProfile
+    timeout: 20
     events:
       - httpApi:
           path: /teams/{id}
@@ -124,6 +133,7 @@ functions:
           method: delete
   imageUploader:
     handler: app/handler.ImageUploader
+    timeout: 20
     events:
       - httpApi:
           path: /upload

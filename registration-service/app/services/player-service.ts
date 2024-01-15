@@ -187,14 +187,6 @@ export class PlayerService {
         return ErrorResponse(404, "player id is null");
       }
 
-      const updatedPlayer = await this._playerRepository.updatePlayerTeamId(
-        playerData.id,
-        teamId
-      );
-      if (!updatedPlayer) {
-        return ErrorResponse(404, "error during updating player team id");
-      }
-
       if (
         !teamData.budget ||
         !playerData.price ||
@@ -204,6 +196,22 @@ export class PlayerService {
           403,
           "Team budget is not enough for your player price"
         );
+      }
+
+      const updatedPlayer = await this._playerRepository.updatePlayerTeamId(
+        playerData.id,
+        teamId
+      );
+      const budget = teamData.budget - playerData.price;
+      const updatedTeam = await this._teamRepository.updateTeamBudget(
+        teamId,
+        budget
+      );
+      if (!updatedPlayer || !updatedTeam) {
+        return ErrorResponse(404, "error during updating entities");
+      }
+      if (!updatedPlayer) {
+        return ErrorResponse(404, "error during updating player team id");
       }
 
       const message = {

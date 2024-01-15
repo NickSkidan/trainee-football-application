@@ -1,11 +1,11 @@
-import { Client } from "pg";
 import {
   SecretsManagerClient,
   GetSecretValueCommand,
 } from "@aws-sdk/client-secrets-manager";
+import { Client } from "pg";
 
 const getDatabaseCredentials = async () => {
-  const secretName = process.env.DB_SECRET_NAME;
+  const secretName = "trainee/football/app/transfer/db/secret";
 
   const client = new SecretsManagerClient();
 

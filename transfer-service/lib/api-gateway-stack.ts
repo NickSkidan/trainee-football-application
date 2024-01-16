@@ -33,11 +33,11 @@ export class ApiGatewayStack extends Construct {
     });
 
     // transfer Endpoint
-    const orderResource = this.createEndpoints(getTransfers, apgw, {
+    const transferResource = this.createEndpoints(getTransfers, apgw, {
       name: "transfers",
       methods: ["GET"],
     });
-    this.addChildEndpoint("{id}", "GET", getTransfer, orderResource);
+    this.addChildEndpoint("{id}", "GET", getTransfer, transferResource);
   }
 
   createEndpoints(

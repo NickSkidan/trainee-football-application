@@ -16,7 +16,7 @@ export const getTransfersHandler = middy(
             "Content-Type": "application/json",
           },
           statusCode: 201,
-          body: JSON.stringify({ orders: result.rows[0] }),
+          body: JSON.stringify({ transfers: result.rows[0] }),
         };
       }
     }
@@ -41,7 +41,7 @@ export const getTransferHandler = middy(
             "Content-Type": "application/json",
           },
           statusCode: 201,
-          body: JSON.stringify({ order: result.rows }),
+          body: JSON.stringify({ transfer: result.rows }),
         };
       }
     }

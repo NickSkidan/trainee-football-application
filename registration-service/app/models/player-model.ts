@@ -5,8 +5,8 @@ export interface PlayerModel {
   name?: string;
   age?: number;
   position?: PlayerPosition;
-  userId?: string;
-  teamId?: string;
-  playerPhotoUrl?: string;
+  user_id?: string;
+  team_id?: string;
+  player_photo_url?: string;
   price?: number;
 }

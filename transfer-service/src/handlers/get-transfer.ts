@@ -1,7 +1,8 @@
 import { APIGatewayEvent, Context } from "aws-lambda";
 import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 import { DBOperation } from "./db-operation";
+import { CreateTransferInput } from "../dto/input";
+import { ErrorResponse, SuccessResponse } from "../utilities/response";
 
 export const getTransfersHandler = middy(
   async (event: APIGatewayEvent, context: Context) => {
@@ -10,22 +11,12 @@ export const getTransfersHandler = middy(
     const result = await dbOperation.executeQuery(queryString, []);
     if (result.rowCount) {
       if (result.rowCount > 0) {
-        return {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-          statusCode: 201,
-          body: JSON.stringify({ transfers: result.rows[0] }),
-        };
+        return SuccessResponse(result.rows as CreateTransferInput[]);
       }
     }
-    return {
-      statusCode: 404,
-      body: JSON.stringify({ message: "transfers not found" }),
-    };
+    return ErrorResponse(404, "transfers not found");
   }
-).use(jsonBodyParser());
+);
 
 export const getTransferHandler = middy(
   async (event: APIGatewayEvent, context: Context) => {
@@ -35,23 +26,9 @@ export const getTransferHandler = middy(
     const result = await dbOperation.executeQuery(queryString, [id]);
     if (result.rowCount) {
       if (result.rowCount > 0) {
-        return {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-          statusCode: 201,
-          body: JSON.stringify({ transfer: result.rows }),
-        };
+        return SuccessResponse(result.rows as CreateTransferInput[]);
       }
     }
-    return {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      statusCode: 404,
-      body: JSON.stringify({ message: "transfers not found" }),
-    };
+    return ErrorResponse(404, "transfers not found");
   }
-).use(jsonBodyParser());
+);

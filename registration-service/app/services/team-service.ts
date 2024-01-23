@@ -172,6 +172,7 @@ export class TeamService {
       if (!playerData) {
         return ErrorResponse(404, "player was not found");
       }
+      console.log("PLAYER_DATA:", playerData);
 
       const teamData = await this._teamRepository.getTeamByUserId(payload.id);
       if (!teamData) {
@@ -209,7 +210,7 @@ export class TeamService {
       const message = {
         userId: payload.id,
         playerId: playerId,
-        previousTeamId: playerData.teamId,
+        previousTeamId: playerData.team_id,
         currentTeamId: teamData.id,
         playerPrice: playerData.price,
       };

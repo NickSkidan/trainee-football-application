@@ -182,6 +182,7 @@ export class PlayerService {
       if (!playerData) {
         return ErrorResponse(404, "player was not found");
       }
+      console.log("PLAYER_DATA:", playerData);
 
       if (!playerData.id) {
         return ErrorResponse(404, "player id is null");
@@ -217,11 +218,12 @@ export class PlayerService {
       const message = {
         userId: payload.id,
         playerId: playerData.id,
-        previousTeamId: playerData.teamId,
+        previousTeamId: playerData.team_id,
         currentTeamId: teamId,
         playerPrice: playerData.price,
       };
 
+      console.log("Message:", JSON.stringify(message));
       const input = {
         Message: JSON.stringify(message),
         TopicArn: process.env.SNS_TOPIC,

@@ -4,7 +4,7 @@ export interface TeamModel {
   id?: string;
   name?: string;
   formation?: TeamFormation;
-  userId?: string;
-  teamLogoUrl?: string;
+  user_id?: string;
+  team_logo_url?: string;
   budget?: number;
 }

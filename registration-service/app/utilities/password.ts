@@ -17,16 +17,16 @@ export const ValidatePassword = async (
 
 export const GetToken = ({
   id,
-  firstName,
-  lastName,
+  first_name,
+  last_name,
   email,
   role,
 }: UserModel) => {
   return jwt.sign(
     {
       id,
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       email,
       role,
     },

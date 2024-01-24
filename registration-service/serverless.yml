@@ -137,7 +137,7 @@ functions:
     events:
       - httpApi:
           path: /upload
-          method: post
+          method: get
     environment:
       BUCKET_NAME: trainee-football-app-${self:provider.stage}
   joinTeam:

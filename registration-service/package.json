@@ -1,0 +1,66 @@
+{
+  "name": "trainee-football-application",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.ts",
+  "scripts": {
+    "dev": "npm run update-db && serverless offline",
+    "deploy": "npm run update-db && sls deploy --verbose",
+    "update-db": "npx typeorm-ts-node-commonjs migration:run --dataSource app/db/utils/data-source.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickSkidan/trainee-football-application.git"
+  },
+  "author": "Nick Skidan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NickSkidan/trainee-football-application/issues"
+  },
+  "homepage": "https://github.com/NickSkidan/trainee-football-application#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.7",
+    "@types/nodemailer": "^6.4.14",
+    "@types/pg": "^8.10.9",
+    "@types/uuid": "^9.0.7",
+    "aws-lambda": "^1.0.7",
+    "prettier": "3.1.1",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-offline": "^13.3.2",
+    "serverless-plugin-optimize": "^4.2.1-rc.1",
+    "serverless-plugin-typescript": "^2.1.5",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.485.0",
+    "@aws-sdk/client-secrets-manager": "^3.490.0",
+    "@aws-sdk/client-sns": "^3.489.0",
+    "@aws-sdk/s3-request-presigner": "^3.485.0",
+    "@middy/core": "^4.7.0",
+    "@middy/http-json-body-parser": "^4.7.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcrypt": "^5.1.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "dayjs": "^1.11.10",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "dotenv": "^16.3.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7",
+    "path": "^0.12.7",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.1.14",
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-plugin-lambda-warmup": "^1.0.1",
+    "tsyringe": "^4.8.0",
+    "twilio": "^4.20.0",
+    "typeorm": "^0.3.20",
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.1"
+  }
+}

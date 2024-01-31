@@ -26,7 +26,7 @@ export class ApiGatewayStack extends Construct {
     { getTransfer, getTransfers }: ApiGatewayStackProps
   ) {
     // transfer
-    const apgw = new aws_apigateway.RestApi(this, `${serviceName}-Api`, {
+    const apgw = new aws_apigateway.RestApi(this, `${serviceName}-ApiGateway`, {
       defaultCorsPreflightOptions: {
         allowOrigins: aws_apigateway.Cors.ALL_ORIGINS,
       },

@@ -1,10 +1,11 @@
-import { Client } from "pg";
 import {
   SecretsManagerClient,
   GetSecretValueCommand,
 } from "@aws-sdk/client-secrets-manager";
+import dotenv from "dotenv";
+dotenv.config();
 
-const getDatabaseCredentials = async () => {
+export const getDatabaseCredentials = async () => {
   const secretName = process.env.DB_SECRET_NAME;
 
   const client = new SecretsManagerClient();
@@ -26,17 +27,4 @@ const getDatabaseCredentials = async () => {
   }
   const secretString = response.SecretString || "";
   return JSON.parse(secretString);
-};
-
-export const DBClient = async (): Promise<Client> => {
-  const { host, username, dbname, password, port } =
-    await getDatabaseCredentials();
-
-  return new Client({
-    host,
-    user: username,
-    database: dbname,
-    password,
-    port: parseInt(port || "5432", 10),
-  });
 };

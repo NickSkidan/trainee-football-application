@@ -15,8 +15,6 @@ provider:
     cors: true
   environment:
     SNS_TOPIC: { Ref: TransferTopic }
-    DB_SECRET_NAME: ${env:DB_SECRET_NAME}
-    SMTP_SECRET_NAME: ${env:SMTP_SECRET_NAME}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -37,37 +35,25 @@ custom:
   stage: "dev"
   serverless-offline:
     httpPort: 4000
-    lambdaPort: 4002
+  timeout: 20
 
 functions:
-  registration:
-    handler: app/handler.Registration
-    timeout: 20
+  userHandler:
+    handler: app/handler.UserHandler
+    timeout: ${self:custom.timeout}
     events:
       - httpApi:
           path: /register
           method: post
-  login:
-    handler: app/handler.Login
-    timeout: 20
-    events:
       - httpApi:
           path: /login
           method: post
-  verify:
-    handler: app/handler.Verify
-    timeout: 20
-    events:
       - httpApi:
           path: /verify
           method: post
       - httpApi:
           path: /verify
           method: get
-  profile:
-    handler: app/handler.Profile
-    timeout: 20
-    events:
       - httpApi:
           path: /profile
           method: get
@@ -77,24 +63,16 @@ functions:
       - httpApi:
           path: /profile
           method: post
-  createPlayer:
-    handler: app/handler.CreatePlayer
-    timeout: 20
-    events:
-      - httpApi:
-          path: /player
-          method: post
-  getAllPlayers:
-    handler: app/handler.GetAllPlayers
-    timeout: 20
+  playerHandler:
+    handler: app/handler.PlayerHandler
+    timeout: ${self:custom.timeout}
     events:
       - httpApi:
           path: /players
+          method: post
+      - httpApi:
+          path: /players
           method: get
-  playerProfile:
-    handler: app/handler.PlayerProfile
-    timeout: 20
-    events:
       - httpApi:
           path: /players/{id}
           method: get
@@ -104,24 +82,19 @@ functions:
       - httpApi:
           path: /players/{id}
           method: delete
-  createTeam:
-    handler: app/handler.CreateTeam
-    timeout: 20
-    events:
       - httpApi:
-          path: /team
+          path: /joinTeam/{teamId}
           method: post
-  getAllTeams:
-    handler: app/handler.GetAllTeams
-    timeout: 20
+  teamHanlder:
+    handler: app/handler.TeamHandler
+    timeout: ${self:custom.timeout}
     events:
       - httpApi:
           path: /teams
+          method: post
+      - httpApi:
+          path: /teams
           method: get
-  teamProfile:
-    handler: app/handler.TeamProfile
-    timeout: 20
-    events:
       - httpApi:
           path: /teams/{id}
           method: get
@@ -131,29 +104,18 @@ functions:
       - httpApi:
           path: /teams/{id}
           method: delete
+      - httpApi:
+          path: /addPlayer/{playerId}
+          method: post
   imageUploader:
     handler: app/handler.ImageUploader
-    timeout: 20
+    timeout: ${self:custom.timeout}
     events:
       - httpApi:
           path: /upload
           method: get
     environment:
       BUCKET_NAME: trainee-football-app-${self:provider.stage}
-  joinTeam:
-    handler: app/handler.JoinTeam
-    timeout: 20
-    events:
-      - httpApi:
-          path: /join-team/{teamId}
-          method: post
-  addPlayer:
-    handler: app/handler.AddPlayer
-    timeout: 20
-    events:
-      - httpApi:
-          path: /add-player/{playerId}
-          method: post
 
 plugins:
   - serverless-offline
@@ -161,7 +123,7 @@ plugins:
   - serverless-dotenv-plugin
 
 # package:
-  # individually: true
+# individually: true
 
 resources:
   Resources:
@@ -175,7 +137,6 @@ resources:
         DisplayName: "transfer sns topic description"
         TopicName: TransferTopic
 
-  # output for later usages
   Outputs:
     TransferTopicInfo:
       Description: transfer-topic

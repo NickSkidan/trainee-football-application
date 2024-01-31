@@ -4,16 +4,7 @@ start_db:
 stop_db:
 	docker-compose down
 
-migrate:
-	db-migrate up
-
-migrate_down:
-	db-migrate down
-
-create_migration:
-	db-migrate create $(n) --sql-file
-
 server:
 	npm run dev
 
-.PHONEY: start_db stop_db server migrate migrate-down
+.PHONEY: start_db stop_db server

@@ -1,8 +1,8 @@
-import { UserModel } from "../models/user-model";
+import { User } from "../db/entities/user";
 import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 
-const APP_SECRET = "our_app_secret";
+const APP_SECRET = "trainee_football_app_secret";
 
 export const GetHashedPassword = async (password: string) => {
   return await bcrypt.hash(password, 10);
@@ -15,13 +15,7 @@ export const ValidatePassword = async (
   return await bcrypt.compare(enteredPassword, savedPassword);
 };
 
-export const GetToken = ({
-  id,
-  first_name,
-  last_name,
-  email,
-  role,
-}: UserModel) => {
+export const GetToken = ({ id, first_name, last_name, email, role }: User) => {
   return jwt.sign(
     {
       id,
@@ -37,13 +31,11 @@ export const GetToken = ({
   );
 };
 
-export const VerifyToken = async (
-  token: string
-): Promise<UserModel | false> => {
+export const VerifyToken = async (token: string): Promise<User | false> => {
   try {
     if (token !== "") {
       const payload = await jwt.verify(token.split(" ")[1], APP_SECRET);
-      return payload as UserModel;
+      return payload as User;
     }
     return false;
   } catch (error) {

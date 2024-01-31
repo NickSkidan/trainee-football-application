@@ -1,30 +1,30 @@
-import { ErrorResponse, SuccessResponse } from "../utilities/response";
 import { plainToClass } from "class-transformer";
-import { AppValidationError } from "../utilities/errors";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { PlayerRepository } from "../repositories/player-repository";
-import { PlayerInput } from "../dto/player-input";
 import { autoInjectable } from "tsyringe";
-import { VerifyToken } from "../utilities/password";
-import { UserRepository } from "../repositories/user-repository";
-import { UserRole } from "../utilities/user-role";
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
+import { ErrorResponse, SuccessResponse } from "../../utilities/response";
+import { PlayerInput } from "../../dto/player-input";
+import { AppValidationError } from "../../utilities/errors";
+import { VerifyToken } from "../../utilities/password";
+import { UserRole } from "../../utilities/user-role";
+import { PlayerRepository } from "../repositories/player-repository";
+import { UserRepository } from "../repositories/user-repository";
 import { TeamRepository } from "../repositories/team-repository";
 
 @autoInjectable()
 export class PlayerService {
-  private _playerRepository: PlayerRepository;
-  private _userRepository: UserRepository;
-  private _teamRepository: TeamRepository;
+  private playerRepository!: PlayerRepository;
+  private userRepository!: UserRepository;
+  private teamRepository!: TeamRepository;
 
   constructor(
     playerRepository: PlayerRepository,
     userRepository: UserRepository,
     teamRepository: TeamRepository
   ) {
-    this._playerRepository = playerRepository;
-    this._userRepository = userRepository;
-    this._teamRepository = teamRepository;
+    this.playerRepository = playerRepository;
+    this.userRepository = userRepository;
+    this.teamRepository = teamRepository;
   }
 
   async ResponseWithError(event: APIGatewayProxyEventV2) {
@@ -42,25 +42,30 @@ export class PlayerService {
       if (!payload || !payload.id) {
         return ErrorResponse(403, "authorization failed!");
       }
-
-      const userRole = await this._userRepository.getUserRoleById(payload.id);
-      if (!userRole) {
-        return ErrorResponse(404, "user was not found with provided id");
-      }
-
-      if (userRole.role !== UserRole.PLAYER) {
-        return ErrorResponse(403, "You are not allowed to create player");
-      }
       const input = plainToClass(PlayerInput, event.body);
       const error = await AppValidationError(input);
       if (error) {
         return ErrorResponse(404, error);
       }
 
-      const data = await this._playerRepository.createPlayer(payload.id, input);
+      const id = payload.id;
+
+      const user = await this.userRepository.getUserById(id);
+      if (!user) throw new Error("user was not found");
+      if (!user.role || user.role !== UserRole.PLAYER) {
+        throw new Error("You are not allowed to perform this action");
+      }
+
+      const existingPlayer = await this.playerRepository.getPlayerByUser(user);
+
+      if (existingPlayer) {
+        throw new Error("You already have a player");
+      }
+
+      const data = await this.playerRepository.createPlayer(user, input);
 
       if (!data) {
-        throw new Error("failed to create player");
+        throw new Error("Failed to create player");
       } else {
         return SuccessResponse(data);
       }
@@ -71,36 +76,47 @@ export class PlayerService {
   }
 
   async getPlayer(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization;
-    if (!token) {
-      return ErrorResponse(403, "authorization failed!");
+    try {
+      const token = event.headers.authorization;
+      if (!token) {
+        return ErrorResponse(403, "authorization failed!");
+      }
+
+      const payload = await VerifyToken(token);
+      if (!payload || !payload.id) {
+        return ErrorResponse(403, "authorization failed!");
+      }
+
+      const playerId = event.pathParameters?.id;
+      if (!playerId) return ErrorResponse(403, "null player id");
+
+      const data = await this.playerRepository.getPlayerById(playerId);
+      if (!data) return ErrorResponse(404, "player was not found");
+      return SuccessResponse(data);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
     }
-
-    const payload = await VerifyToken(token);
-    if (!payload || !payload.id) {
-      return ErrorResponse(403, "authorization failed!");
-    }
-
-    const playerId = event.pathParameters?.id;
-    if (!playerId) return ErrorResponse(403, "null player id");
-
-    const data = await this._playerRepository.getPlayerById(playerId);
-    if (!data) return ErrorResponse(404, "player was not found");
-    return SuccessResponse(data);
   }
 
   async getPlayers(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization;
-    if (!token) {
-      return ErrorResponse(403, "authorization failed!");
-    }
+    try {
+      const token = event.headers.authorization;
+      if (!token) {
+        return ErrorResponse(403, "authorization failed!");
+      }
 
-    const payload = await VerifyToken(token);
-    if (!payload || !payload.id) {
-      return ErrorResponse(403, "authorization failed!");
+      const payload = await VerifyToken(token);
+      if (!payload || !payload.id) {
+        return ErrorResponse(403, "authorization failed!");
+      }
+
+      const data = await this.playerRepository.getAllPlayers();
+      return SuccessResponse(data);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
     }
-    const data = await this._playerRepository.getAllPlayers();
-    return SuccessResponse(data);
   }
 
   async editPlayer(event: APIGatewayProxyEventV2) {
@@ -123,10 +139,10 @@ export class PlayerService {
         return ErrorResponse(404, error);
       }
 
-      const data = await this._playerRepository.updatePlayer(playerId, input);
+      const data = await this.playerRepository.updatePlayer(playerId, input);
 
       if (!data) {
-        throw new Error("failed to update player");
+        throw new Error("Failed to update player");
       } else {
         return SuccessResponse(data);
       }
@@ -137,21 +153,26 @@ export class PlayerService {
   }
 
   async deletePlayer(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization;
-    if (!token) {
-      return ErrorResponse(403, "authorization failed!");
-    }
+    try {
+      const token = event.headers.authorization;
+      if (!token) {
+        return ErrorResponse(403, "authorization failed!");
+      }
 
-    const payload = await VerifyToken(token);
-    if (!payload || !payload.id) {
-      return ErrorResponse(403, "authorization failed!");
-    }
-    const playerId = event.pathParameters?.id;
-    if (!playerId) return ErrorResponse(403, "null player id");
+      const payload = await VerifyToken(token);
+      if (!payload || !payload.id) {
+        return ErrorResponse(403, "authorization failed!");
+      }
+      const id = event.pathParameters?.id;
+      if (!id) return ErrorResponse(403, "null player id");
 
-    const data = await this._playerRepository.deletePlayer(playerId);
-    if (!data) return ErrorResponse(404, "player was not found");
-    return SuccessResponse({ msg: "player was successfully deleted" });
+      const data = await this.playerRepository.deletePlayer(id);
+      if (!data) return ErrorResponse(404, "player was not found");
+      return SuccessResponse({ msg: "player was successfully deleted" });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   async joinTeam(event: APIGatewayProxyEventV2) {
@@ -171,18 +192,16 @@ export class PlayerService {
         return ErrorResponse(403, "null team id");
       }
 
-      const teamData = await this._teamRepository.getTeamById(teamId);
+      const teamData = await this.teamRepository.getTeamById(teamId);
       if (!teamData) {
         return ErrorResponse(404, "team was not found");
       }
 
-      const playerData = await this._playerRepository.getPlayerByUserId(
-        payload.id
-      );
+      const userId = payload.id;
+      const playerData = await this.playerRepository.getPlayerByUserId(userId);
       if (!playerData) {
         return ErrorResponse(404, "player was not found");
       }
-      console.log("PLAYER_DATA:", playerData);
 
       if (!playerData.id) {
         return ErrorResponse(404, "player id is null");
@@ -199,26 +218,26 @@ export class PlayerService {
         );
       }
 
-      const updatedPlayer = await this._playerRepository.updatePlayerTeamId(
-        playerData.id,
-        teamId
+      const previousTeamId = playerData.team?.id;
+      console.log("Previous team id:", previousTeamId);
+      const updatedPlayer = await this.playerRepository.updatePlayerTeamId(
+        playerData,
+        teamData
       );
+
       const budget = teamData.budget - playerData.price;
-      const updatedTeam = await this._teamRepository.updateTeamBudget(
-        teamId,
+      const updatedTeam = await this.teamRepository.updateTeamBudget(
+        teamData,
         budget
       );
       if (!updatedPlayer || !updatedTeam) {
         return ErrorResponse(404, "error during updating entities");
       }
-      if (!updatedPlayer) {
-        return ErrorResponse(404, "error during updating player team id");
-      }
 
       const message = {
         userId: payload.id,
         playerId: playerData.id,
-        previousTeamId: playerData.team_id,
+        previousTeamId: previousTeamId,
         currentTeamId: teamId,
         playerPrice: playerData.price,
       };

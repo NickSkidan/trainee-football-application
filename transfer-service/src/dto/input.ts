@@ -10,11 +10,3 @@ export class RawTransferInput {
   currentTeamId: string;
   playerPrice: number;
 }
-
-export interface CreateTransferInput {
-  user_id: string;
-  player_id: string;
-  previous_team_id: string;
-  current_team_id: string;
-  player_price: number;
-}

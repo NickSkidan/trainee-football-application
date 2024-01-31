@@ -1,3 +1,0 @@
-DROP TABLE IF EXISTS transfers;
-
-DROP EXTENSION IF EXISTS "uuid-ossp";

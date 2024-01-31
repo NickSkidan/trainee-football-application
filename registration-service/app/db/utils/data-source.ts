@@ -15,7 +15,7 @@ const getAppDataSource = async (): Promise<DataSource> => {
     password: credentials.password,
     database: credentials.dbname,
     entities: [Player, Team, User],
-    migrations: ["../db/migrations/*.ts"],
+    migrations: ["app/db/migrations/*.ts"],
     synchronize: true,
   });
 

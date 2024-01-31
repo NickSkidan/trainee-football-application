@@ -13,7 +13,7 @@ const getAppDataSource = async (): Promise<DataSource> => {
     password: credentials.password,
     database: credentials.dbname,
     entities: [Transfer],
-    migrations: ["../db/migrations/*.ts"],
+    migrations: ["./src/db/migrations/*.ts"],
     synchronize: true,
   });
 

@@ -13,6 +13,7 @@ provider:
   region: us-west-2
   httpApi:
     cors: true
+    # contentHandling: CONVERT_TO_BINARY
   environment:
     SNS_TOPIC: { Ref: TransferTopic }
   iamRoleStatements:
@@ -20,7 +21,12 @@ provider:
       Action:
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: arn:aws:s3:::trainee-football-app-${self:provider.stage}/*
+        - "s3:GetBucketPolicy"
+        - "s3:PutBucketPolicy"
+        - "s3:ListBucket"
+      Resource:
+        - arn:aws:s3:::trainee-football-app-${self:provider.stage}/*
+        - arn:aws:s3:::trainee-football-app-${self:provider.stage}
     - Effect: Allow
       Action:
         - "sns:Publish"
@@ -113,7 +119,7 @@ functions:
     events:
       - httpApi:
           path: /upload
-          method: get
+          method: post
     environment:
       BUCKET_NAME: trainee-football-app-${self:provider.stage}
 
@@ -131,6 +137,27 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: trainee-football-app-${self:provider.stage}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref BucketUpload
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Resource:
+                - !Sub "arn:aws:s3:::${BucketUpload}/*"
+                - !Sub "arn:aws:s3:::${BucketUpload}"
+              Action:
+                - "s3:GetObject"
+                - "s3:ListBucket"
     TransferTopic:
       Type: AWS::SNS::Topic
       Properties:

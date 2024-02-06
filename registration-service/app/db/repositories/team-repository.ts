@@ -86,4 +86,15 @@ export class TeamRepository {
     team.budget = budget;
     return await repository.save(team);
   }
+
+  async updateTeamLogoUrl(id: string, imageUrl: string): Promise<boolean> {
+    const repository = await this.getRepository();
+    const team = await repository.findOne({ where: { id } });
+    if (team) {
+      team.team_logo_url = imageUrl;
+      await repository.save(team);
+      return true;
+    }
+    return false;
+  }
 }

@@ -93,4 +93,15 @@ export class PlayerRepository {
     player.team = team;
     return await repository.save(player);
   }
+
+  async updatePlayerPhotoUrl(id: string, imageUrl: string): Promise<boolean> {
+    const repository = await this.getRepository();
+    const player = await repository.findOne({ where: { id } });
+    if (player) {
+      player.player_photo_url = imageUrl;
+      await repository.save(player);
+      return true;
+    }
+    return false;
+  }
 }

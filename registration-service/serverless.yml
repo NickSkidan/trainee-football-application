@@ -118,7 +118,7 @@ functions:
     timeout: ${self:custom.timeout}
     events:
       - httpApi:
-          path: /upload
+          path: /upload/{entityType}/{id}
           method: post
     environment:
       BUCKET_NAME: trainee-football-app-${self:provider.stage}

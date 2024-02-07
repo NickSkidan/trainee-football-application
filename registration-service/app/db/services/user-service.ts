@@ -29,7 +29,7 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async ResponseWithError(event: APIGatewayProxyEventV2) {
+  async ResponseWithError() {
     return ErrorResponse(404, "requested method is not supported!");
   }
 
@@ -164,14 +164,10 @@ export class UserService {
             throw new Error("User not found or already verified!");
           }
 
-          const updatedUser = await this.userRepository.updateVerificationCode(
-            user,
-            code,
-            expiry
-          );
+          await this.userRepository.updateVerificationCode(user, code, expiry);
           console.log("verification code was inserted into the db");
 
-          const response = await SendVerificationCode(code, payload.email);
+          await SendVerificationCode(code, payload.email);
           return SuccessResponse({
             message: "Verification code is sent to your email",
           });

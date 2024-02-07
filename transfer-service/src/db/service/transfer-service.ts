@@ -24,7 +24,7 @@ export class TransferService {
       console.log("ERRORS:", JSON.stringify(errors));
 
       if (!errors) {
-        const data = await this.transferRepository.createTransfer(input);
+        await this.transferRepository.createTransfer(input);
         await this.deleteMessageFromQueue(record, sqsClient);
       } else {
         transferResponse.push({ error: JSON.stringify(errors) });
@@ -38,7 +38,7 @@ export class TransferService {
 
   async getTransfer(event: APIGatewayEvent) {
     try {
-      const { id } = event.pathParameters as any;
+      const { id } = event.pathParameters as any; // eslint-disable-line @typescript-eslint/no-explicit-any
       const data = await this.transferRepository.getTransferByUserId(id);
       if (!data) return ErrorResponse(404, "transfers not found");
       return SuccessResponse(data);
@@ -48,7 +48,7 @@ export class TransferService {
     }
   }
 
-  async getTransfers(event: APIGatewayEvent) {
+  async getTransfers(event: APIGatewayEvent) { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
       const data = await this.transferRepository.getAllTransfers();
       if (!data) return ErrorResponse(404, "transfers not found");

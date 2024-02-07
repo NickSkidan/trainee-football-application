@@ -38,6 +38,6 @@ export const UserHandler = middy((event: APIGatewayProxyEventV2) => {
       break;
 
     default:
-      return service.ResponseWithError(event);
+      return service.ResponseWithError();
   }
 }).use(bodyParser());

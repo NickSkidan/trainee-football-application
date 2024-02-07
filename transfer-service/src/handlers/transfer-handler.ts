@@ -13,13 +13,13 @@ export const createTransferHandler = async (event: SQSEvent) => {
 };
 
 export const getTransfersHandler = middy(
-  async (event: APIGatewayEvent, context: Context) => {
+  async (event: APIGatewayEvent, context: Context) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     return service.getTransfers(event);
   }
 );
 
 export const getTransferHandler = middy(
-  async (event: APIGatewayEvent, context: Context) => {
+  async (event: APIGatewayEvent, context: Context) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     return service.getTransfer(event);
   }
 );

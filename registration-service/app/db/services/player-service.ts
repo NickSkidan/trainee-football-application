@@ -27,7 +27,7 @@ export class PlayerService {
     this.teamRepository = teamRepository;
   }
 
-  async ResponseWithError(event: APIGatewayProxyEventV2) {
+  async ResponseWithError() {
     return ErrorResponse(404, "requested method is not supported!");
   }
 

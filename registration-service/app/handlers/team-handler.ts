@@ -17,7 +17,7 @@ export const TeamHandler = middy((event: APIGatewayProxyEventV2) => {
       return handleAddPlayerRoute(method, event);
 
     default:
-      return service.ResponseWithError(event);
+      return service.ResponseWithError();
   }
 }).use(bodyParser());
 

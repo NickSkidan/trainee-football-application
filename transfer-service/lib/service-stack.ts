@@ -16,7 +16,7 @@ export class ServiceStack extends Construct {
   public readonly getTransfer: NodejsFunction;
   public readonly getTransfers: NodejsFunction;
 
-  constructor(scope: Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
     super(scope, id);
 
     const functionProps: NodejsFunctionProps = {
